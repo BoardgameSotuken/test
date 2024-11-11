@@ -126,7 +126,7 @@ class Main:
         
 
         #map_listから[0]の要素のみ取り出した新しい配列を作成
-        map_id_list = [item[0] for item in map_list]
+        map_id_list = [int(item[0]) for item in map_list]
 
         print(map_id_list)
         return map_id_list
