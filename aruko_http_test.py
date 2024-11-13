@@ -18,17 +18,17 @@ class Main:
 
 
     def Aruco_reading(self):
-        # プログレスバー用カウント(1メモリ0.05秒)
+
+        # Aruco辞書を取得 
+        ''' [1 : 役職用] [2 : マッピング用]'''
+        aruco_dict = {'1' : aruco.getPredefinedDictionary(aruco.DICT_4X4_250), '2' : aruco.getPredefinedDictionary(aruco.DICT_6X6_250)}
+
+
         cnt = 0
         cap = cv2.VideoCapture(0)
-        # コンソール画面の初期化
-        aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
-        # Aruco辞書を取得
         parameters = aruco.DetectorParameters()
-        # Aruco取得モード
         start_pos = None
         goal_pos = None
-
         start_goal_check = True
 
         while True:
@@ -36,11 +36,37 @@ class Main:
             if not ret:
                 break
             # マーカーを検出
-            detecter = aruco.ArucoDetector(aruco_dict, parameters)
+            detecter = aruco.ArucoDetector(aruco_dict[f'{self.capture_mode}'], parameters)
             corners, ids, rejectedImgPoints = detecter.detectMarkers(frame)
 
 
-            if self.capture_mode == 2:
+            #
+            #''' [1] : 役職モード '''
+            #
+
+            if self.capture_mode == 1:
+                
+                if ids is not None:
+                    countber = ""
+                    # 最初のマーカーIDを取得
+                    for i in range(1, cnt + 1):
+                        countber += "="
+
+                    marker_id = int(ids[0][0])
+                    print("\033[2A")
+                    print(f'Detected marker ID: {marker_id:<4}\nCount : [{countber:<19}]', end='')
+                    cnt += 1
+                    if cnt == 20:
+                        print('\nreading!')
+                        self.data_sending(marker_id)
+                else:
+                    cnt = 0
+                    
+            #
+            #''' [2] : マップモード'''
+            #
+            
+            elif self.capture_mode == 2:
                 if ids is not None:
                     if start_goal_check:
                             
@@ -152,6 +178,28 @@ class Main:
                 break
 
         return nearest_marker_index
+    
+    def data_sending(self, marker_id):
+        ws_url = 'ws://127.0.0.1:3001'  # WebSocketサーバーのURL
+
+        try:
+            # WebSocket接続を作成
+            ws = websocket.create_connection(ws_url)
+
+            # データを送信するためのペイロードを作成
+            data = {
+                'marker_id': marker_id}
+            ws.send(json.dumps(data))  # データをJSON形式に変換して送信
+
+            # サーバーからのレスポンスを受け取る
+            response = ws.recv()
+            print(f'Response from WebSocket server: {response}')
+
+            # 接続を閉じる
+            ws.close()
+
+        except Exception as e:
+            print(f'Error! {e}')
 
 
 
@@ -164,7 +212,7 @@ if __name__ == "__main__":
     
     Main Mode 1
 
-        単体モード
+        役職モード
 
         役職決めなどの一枚使用時のモード
     
@@ -174,5 +222,5 @@ if __name__ == "__main__":
 
     '''
         
-    a = Main(2)
+    a = Main(1)
     a.Aruco_reading()
