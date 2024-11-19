@@ -1,3 +1,4 @@
+import './GamePage.css'
 import React, { useState, useContext, useEffect } from 'react';
 import { WebSocketContext } from '../WebSocketContext';
 

@@ -59,22 +59,26 @@ class Main:
         cv2.destroyAllWindows()
 
     def data_sending(self, marker_id):
-        ws_url = 'ws://172.16.2.125:8080'  # WebSocketサーバーのURL
+        ws_url = 'ws://localhost:8080'  # WebSocketサーバーのURL
 
         try:
             # WebSocket接続を作成
             ws = websocket.create_connection(ws_url)
 
             # データを送信するためのペイロードを作成
-            data = {'type': 'arco', 'marker_id': marker_id}
+            data = {'tag': 'arco', 'marker_id': marker_id}
             ws.send(json.dumps(data))  # データをJSON形式に変換して送信
             
             # 接続を閉じる
+            print('send!')
             ws.close()
 
         except Exception as e:
             print(f'Error! {e}')
 
 if __name__ == "__main__":
-    a = Main('pyaer1')
-    a.Aruco_reading()
+
+    for i in range(1,5):        
+        a = Main('pyaer1')
+        a.data_sending(i)
+        ##a.Aruco_reading()

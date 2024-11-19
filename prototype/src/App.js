@@ -8,15 +8,17 @@ import './App.css';
 
 function App() {
   return (
-    <WebSocketProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<JoinPage />} />
-          <Route path="/camera" element={<CameraPage />} />
-          <Route path="/game" element={<GamePage />} />
-        </Routes>
-      </Router>
-    </WebSocketProvider>
+    <div className='wrapper'>
+      <WebSocketProvider>
+        <Router>
+          <Routes className="content">
+            <Route path="/" element={<JoinPage />} />
+            <Route path="/camera" element={<CameraPage />} />
+            <Route path="/game" element={<GamePage />} />
+          </Routes>
+        </Router>
+      </WebSocketProvider>
+    </div>
   );
 }
 

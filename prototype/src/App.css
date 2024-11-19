@@ -1,10 +1,24 @@
-.App {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin-top: 50px;
+.wrapper {
+  position: relative;
+  width: 100%; /* 横幅いっぱい */
+  max-width: 1920px; /* 最大幅を1920pxに制限 */
+  aspect-ratio: 16 / 10; /* 1920x1200の比率を維持 */
+  margin: auto; /* 中央に配置 */
+  background-color: #ccc; /* 台座の背景色（デバッグ用） */
+  overflow: hidden; /* 中身がはみ出さないようにする */
 }
 
-.chat-box {
+.content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #fff; /* コンテンツエリアの背景色 */
+  display: flex; /* 子コンポーネントの配置調整用 */
+  justify-content: center;
+  align-items: center;
+
+  
+}.chat-box {
   width: 300px;
   height: 400px;
   border: 1px solid #ccc;
@@ -78,9 +92,9 @@ button:hover {
 }
 
 .board {
-  display: flex; /* セルを横並びにする */
-  flex-wrap: wrap; /* 必要に応じて折り返す */
-  gap: 5px; /* セル間のスペース */
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 5px; 
   display: flex;
   justify-content: center;
   margin-top: 100px;
@@ -90,4 +104,4 @@ button:hover {
   display: flex;
   justify-content: center;
 }
-
+ 
