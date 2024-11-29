@@ -33,8 +33,9 @@ wss.on('connection', (ws) => {
         ws.send(JSON.stringify({ type: 'dice', next : resNextPlayer, positions : resPositions  }));
         break;
       case 'arco':
-        console.log(parsedMessage.marker_id)
+        console.log(parsedMessage.marker_id);
         break;
+
       default:
         console.log(`Unknown message type from ${clientId}`);
     }

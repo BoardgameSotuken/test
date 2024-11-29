@@ -14,6 +14,10 @@ function JoinPage() {
     setIsButtonVisible(false);
   };
 
+  const toMapping = () => {
+    navigate('/map')
+  }
+
   useEffect(() => {
     if (!ws) return;
 
@@ -38,16 +42,23 @@ function JoinPage() {
   };
 
   return (
-    <div className="all">
-      {isButtonVisible ? (
-        <div className="button">
-          <button onClick={onClick}>START</button>
-        </div>
-      ) : (
-        <div className="message">
-          <p>{message}</p>
-        </div>
-      )}
+    <div>
+      <div className="all">
+        {isButtonVisible ? (
+          <div className="button">
+            <button onClick={onClick}>START</button>
+          </div>
+          
+          
+        ) : (
+          <div className="message">
+            <p>{message}</p>
+          </div>
+        )}
+      </div>
+      <div className="button">
+        <button onClick={toMapping}>MAP</button>
+      </div>
     </div>
   );
 }

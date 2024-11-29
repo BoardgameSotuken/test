@@ -4,6 +4,7 @@ import { WebSocketProvider } from './WebSocketContext';
 import JoinPage from './pages/JoinPage';
 import CameraPage from './pages/CameraPage';
 import GamePage from './pages/GamePage';
+import MapPage from './pages/MapPage'
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<JoinPage />} />
           <Route path="/camera" element={<CameraPage />} />
           <Route path="/game" element={<GamePage />} />
+          <Route path="/map" element={<MapPage />} />
         </Routes>
       </Router>
     </WebSocketProvider>

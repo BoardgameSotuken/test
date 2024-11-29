@@ -1,11 +1,12 @@
 import cv2
+import numpy as np
 import cv2.aruco as aruco
 import websocket
 import json
 import time
 import os
-import numpy as np
 import matplotlib.pyplot as plt
+import requests
 
 
 
@@ -21,7 +22,8 @@ class Main:
 
         # Aruco辞書を取得 
         ''' [1 : 役職用] [2 : マッピング用]'''
-        aruco_dict = {'1' : aruco.getPredefinedDictionary(aruco.DICT_4X4_250), '2' : aruco.getPredefinedDictionary(aruco.DICT_6X6_250)}
+        aruco_dict = {'1' : aruco.getPredefinedDictionary(aruco.DICT_4X4_250), 
+                      '2' : aruco.getPredefinedDictionary(aruco.DICT_6X6_250)}
 
 
         cnt = 0
@@ -95,9 +97,11 @@ class Main:
                         markers_id_pos = np.squeeze((np.concatenate([np_ids,np_pos],axis=2)),1)
                         #print(markers_id_pos)
                         if cv2.waitKey(1) & 0xFF == ord('p'):
-                            # self.next_point(markers_id_pos)
-                            #self.plot_point(markers_id_pos) 
-                            self.make_map(markers_id_pos) 
+                            make_map_list = self.make_map(markers_id_pos) 
+                            sending_data = self.plot_point(markers_id_pos,make_map_list) 
+                            self.data_sending = sending_data
+
+                            
 
             # マーカーをフレームに描画
             aruco.drawDetectedMarkers(frame, corners, ids)
@@ -113,7 +117,11 @@ class Main:
         cap.release()
         cv2.destroyAllWindows()
 
-    def plot_point(self,marker_id_point):
+    def plot_point(self,marker_id_point,make_map_list):
+
+        result = np.array([row for num in make_map_list for row in marker_id_point if row[0] == num])
+
+        return result
 
         fig = plt.figure()
         plt.clf()
@@ -154,7 +162,6 @@ class Main:
         #map_listから[0]の要素のみ取り出した新しい配列を作成
         map_id_list = [int(item[0]) for item in map_list]
 
-        print(map_id_list)
         return map_id_list
 
 
@@ -180,15 +187,22 @@ class Main:
         return nearest_marker_index
     
     def data_sending(self, marker_id):
-        ws_url = 'ws://127.0.0.1:3001'  # WebSocketサーバーのURL
+        ws_url = 'ws://localhost:8080'  # WebSocketサーバーのURL
 
         try:
             # WebSocket接続を作成
             ws = websocket.create_connection(ws_url)
 
-            # データを送信するためのペイロードを作成
-            data = {
-                'marker_id': marker_id}
+            # NumPyの配列をリストにする
+            if isinstance(marker_id,np.ndarray):
+                marker_id = marker_id.tolist()
+
+                data = {'type': 'list', 'map_list': marker_id} # データを送信するためのペイロードを作成
+            
+            else:
+                data = {'type': 'arco', 'marker_id': marker_id} # データを送信するためのペイロードを作成
+
+            
             ws.send(json.dumps(data))  # データをJSON形式に変換して送信
 
             # サーバーからのレスポンスを受け取る
@@ -200,8 +214,6 @@ class Main:
 
         except Exception as e:
             print(f'Error! {e}')
-
-
 
 
 if __name__ == "__main__":

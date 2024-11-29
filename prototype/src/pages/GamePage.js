@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { WebSocketContext } from '../WebSocketContext';
+import { useNavigate } from 'react-router-dom';
 
 function GamePage() {
   const iconImgs = new Array("/imgs/00.png","/imgs/01.png","/imgs/02.png","/imgs/03.png","/imgs/04.png","/imgs/05.png","/imgs/06.png");
@@ -14,7 +15,8 @@ function GamePage() {
   let diceImgs = new Array("/imgs/1.png","/imgs/2.png","/imgs/3.png","/imgs/4.png","/imgs/5.png","/imgs/6.png");
   const [message, setMessage] = useState("プレイヤー1はサイコロを振ってください。");
   const { ws, sendMessage } = useContext(WebSocketContext);
-
+  const navigate = useNavigate();
+  
   useEffect(() => {
     sendData('getRoles', null);
     return () => {
@@ -70,8 +72,12 @@ function GamePage() {
     setImg(diceImgs[diceNum]);
     sendData('dice', diceNum);
     return diceNum;
-    }
+  }
 
+  function map(){
+    navigate('/map');
+  }
+  
   //画面に表示
   return (
     <>
@@ -80,6 +86,9 @@ function GamePage() {
         <h1>プロトタイプゲーム</h1>
       </header>
       <h2>{message}</h2>
+    </div>
+    <div className='button'>
+      <button onClick={map}>マップ</button>
     </div>
     <div className="dice">
       <img width = "150" height = "150" src = {img} name = "diceImg"/>
