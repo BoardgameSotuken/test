@@ -14,44 +14,57 @@ wss.on('connection', (ws) => {
 
 		try{
 			const req = JSON.parse(message);
-			switch (req.tag) {
-				case 'join':
-					//playerListにUUIDをセット
+			if (req.tag) {
+				switch (req.tag) {
+				  case 'join':
 					join.setPlayerList(ws);
-					//プレイヤーの人数を各クライアントに通知
 					join.sendPlayerCnt(wss);
 					break;
-
-				case 'arco':
+		  
+				  case 'arco':
 					console.log(req.marker_id);
-					//役職を決定し各クライアントに通知
 					ctrl.setRole(wss, req.marker_id);
 					break;
-
-				case 'getRoles':
+		  
+				  case 'getRoles':
 					const roles = ctrl.getRoles();
 					sendDataToAll('sendRoles', roles);
 					break;
-
-				case 'dice':
+		  
+				  case 'dice':
 					const currentPositions = ctrl.movePosition(req.data);
 					sendDataToAll('position', currentPositions);
 					break;
-
-				case 'image':
-					const { frame, list } = req.data;  // データから image_data と list_data を抽出
-					sendDataToAll('image', {"frame_data": frame, "list_data": list});
-					ws.send(getResponce());
+		  
+				  case 'image':
+					const frame = req.data;
+					const list_data = req.list;
+					sendDataToAll('image', [frame] + list_data);
 					break;
-
-				case 'setMap':
+		  
+				  default:
+					console.log("Unknown tag:", req.tag);
+					break;
+				}
+			  }
+		  
+			  // `button`の処理
+			if (req.button) {
+				switch (req.button) {
+				  case 'send':
 					console.log("でーたじゅんしん");
 					setResponce(req.data);
-					break
+					break;
+					
+				  case 'get':
+					console.log('そうしん');
+					
 
-				default:
-					return;
-			}
+				  default:
+					console.log("Unknown button:", req.button);
+					break;
+				}
+			  }
 
 		}catch(error){
 			sendDataToAll('list', message);
@@ -71,7 +84,7 @@ wss.on('connection', (ws) => {
 function sendDataToAll(scene, data = null){
 	const messageData = {
 		tag : scene,
-		data : data
+		data : data,
 	}
 	wss.clients.forEach(client => {
 		client.send(JSON.stringify(messageData));
@@ -94,9 +107,8 @@ function getResponce(){
 	return Res_msg;
 }
 
-function setResponce(data){
+function setResponce(data = null){
 	Res_msg = data;
-	//setTimeout(() => {Res_msg = "notset"},1000);
 }
 
 console.log('WebSocket server is running on ws://localhost:8080');

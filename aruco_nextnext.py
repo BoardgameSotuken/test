@@ -6,24 +6,22 @@ import numpy as np
 import base64
 import json
 
-# WebSocketサーバーのホストとポート
-HOST = 'ws://localhost:8080'  # WebSocket URL
-
-async def send_video():
-    
-    # カメラの準備
+async def send_webcam_data(websocket):
+    """
+    Webカメラからフレームを取得してWebSocketで送信
+    """
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     cap.set(cv2.CAP_PROP_FPS, 30)
 
     parameters = aruco.DetectorParameters()
-    list_data = None
 
-    # WebSocketサーバーに接続
+    data_sending = None
+    list_data = None
+        
     try:
-        async with websockets.connect(HOST) as websocket:
-            while True:
+        while True:
                 # 1フレーム分のデータを取得
                 ret, frame = cap.read()
                 if not ret:
@@ -62,9 +60,11 @@ async def send_video():
 
                             markers_id_pos = np.squeeze((np.concatenate([np_ids,np_pos],axis=2)),1)
                             #print(markers_id_pos)
+
+
                             make_map_list = make_map(markers_id_pos) 
-                            list_data = (np.array([row for num in make_map_list for row in markers_id_pos if row[0] == num])).tolist()
-                            
+                            list_data = np.array([row for num in make_map_list for row in markers_id_pos if row[0] == num]).tolist()
+
     
 
                 # マーカーをフレームに描画
@@ -79,23 +79,66 @@ async def send_video():
                     print("JPEGエンコード失敗")
                     continue
 
-                if list_data is None:
-                    list_data[0,0,0]
+                # JSONメッセージ作成前にlist_dataの確認
+                if list_data:
+                    message = json.dumps({
+                        "tag": "image",
+                        "data": [frame_data],
+                        "list": list_data  # frame_dataを先頭に、list_dataの各要素を追加
+                    })
+                else:
+                    # list_dataが空の場合
+                    message = json.dumps({
+                        "tag": "image",
+                        "data": [frame_data]  # frame_dataのみ
+                    })
 
-                message = json.dumps({
-                    "tag": "image",
-                    "data": [frame_data,list_data]
-                })
-
+                
                 await websocket.send(message)  # 画像データを送信
                 #print(responce)        
 
     except Exception as e:
         print(f"Unexpected error: {e}")
         await asyncio.sleep(1)  # 再接続までの待機時間を追加
-        await send_video()
-    # カメラをリリース
-    cap.release()
+        await send_webcam_data(websocket)
+
+    finally:
+        cap.release()  # カメラリソースを解放
+
+
+async def receive_server_messages(websocket):
+    """
+    サーバーからのメッセージを受信
+    """
+    try:
+        while True:
+            message = await websocket.recv()  # サーバーからのメッセージを受信
+            parsed_message = json.loads(message)
+            print("Received from server:", parsed_message)
+
+    except websockets.exceptions.ConnectionClosed:
+        print("WebSocket connection closed")
+    except Exception as e:
+        print(f"Error while receiving server messages: {e}")
+
+
+async def websocket_client():
+    uri = "ws://localhost:8080"  # Node.js WebSocketサーバーのアドレス
+
+    try:
+        async with websockets.connect(uri) as websocket:
+            print("Connected to WebSocket server")
+
+            # Webカメラデータ送信とサーバーメッセージ受信を並行実行
+            await asyncio.gather(
+                send_webcam_data(websocket),
+                receive_server_messages(websocket)
+            )
+
+    except ConnectionRefusedError:
+        print("Failed to connect to the WebSocket server")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def make_map(marker_id_point):
     marker_id_pos = np.array(marker_id_point)
@@ -154,6 +197,6 @@ def find_nearest_id(reference_id, marker_id_point):
             break
 
     return nearest_marker_index
-
-# 非同期で動画を送信
-asyncio.run(send_video())
+# メインイベントループを実行
+if __name__ == "__main__":
+    asyncio.run(websocket_client())
