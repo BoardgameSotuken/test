@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 const VideoStream = () => {
   const [frame, setFrame] = useState(""); // フレームデータを格納
   const [isConnected, setIsConnected] = useState(false); // 接続状態を管理
-  const [list_data, setList] = useState([[], [], []]); // list を空の配列で初期化
+  const [list_data, setList] = useState([[]]); // list を空の配列で初期化
   const [showTable, setShowTable] = useState(false); // テーブルの表示状態を管理
   const socketRef = useRef(null); // WebSocketインスタンスを参照で保持
   const frameRef = useRef(null); // <img>タグに関連付ける
@@ -27,16 +27,15 @@ const VideoStream = () => {
 
         const message = JSON.parse(event.data); // メッセージをJSONとして解析
 
-        if (message.data) {
-          const frame_data = message.data[0];
-          const list_data = message.data[1];
-
-          if (frame_data) {
-            setFrame(frame_data); // Base64フレームを更新
+        if (message.tag === "image") {
+          // 映像データの更新
+          if (message.data.frame) {
+            setFrame(message.data.frame);
           }
-
-          if (list_data) {
-            setList([list_data]); // list_dataを更新
+      
+          // マーカーリストの更新
+          if (message.data.list_data) {
+            setList(message.data.list_data); // 二次リストをそのまま更新
           }
         }
       };
@@ -68,6 +67,8 @@ const VideoStream = () => {
     if (frame && frameRef.current) {
       frameRef.current.src = `data:image/jpeg;base64,${frame}`;
     }
+
+
   }, [frame]);
 
   const toggleTable = () => {
@@ -98,11 +99,11 @@ const VideoStream = () => {
               </tr>
             </thead>
             <tbody>
-              {list_data.map((id, index) => (
+              {list_data.map((row, index) => (
                 <tr key={index}>
-                  <td>{list_data[0] ?? "N/A"}</td>
-                  <td>{list_data[1] ?? "N/A"}</td>
-                  <td>{list_data[2] ?? "N/A"}</td>
+                  <td>{row[0] ?? "N/A"}</td> {/* ID */}
+                  <td>{row[1] ?? "N/A"}</td> {/* X座標 */}
+                  <td>{row[2] ?? "N/A"}</td> {/* Y座標 */}
                 </tr>
               ))}
             </tbody>

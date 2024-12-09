@@ -37,9 +37,9 @@ wss.on('connection', (ws) => {
 					break;
 		  
 				  case 'image':
-					const frame = req.data;
-					const list_data = req.list;
-					sendDataToAll('image', [frame] + list_data);
+					const frame = req.data;      // 映像データ
+					const list_data = req.list; // マーカー情報
+					sendDataToAll('image', { frame, list_data }); // frameとlist_dataを一緒に送信
 					break;
 		  
 				  default:
@@ -53,12 +53,12 @@ wss.on('connection', (ws) => {
 				switch (req.button) {
 				  case 'send':
 					console.log("でーたじゅんしん");
-					setResponce(req.data);
 					break;
 					
 				  case 'get':
 					console.log('そうしん');
-					
+					ws.send(getResponce());
+					break;
 
 				  default:
 					console.log("Unknown button:", req.button);

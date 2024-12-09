@@ -83,19 +83,18 @@ async def send_webcam_data(websocket):
                 if list_data:
                     message = json.dumps({
                         "tag": "image",
-                        "data": [frame_data],
-                        "list": list_data  # frame_dataを先頭に、list_dataの各要素を追加
+                        "data": frame_data,
+                        "list": list_data  # 二次リストとして送信
                     })
                 else:
-                    # list_dataが空の場合
                     message = json.dumps({
                         "tag": "image",
-                        "data": [frame_data]  # frame_dataのみ
+                        "data": frame_data,
+                        "list": []  # 空リストを送信
                     })
-
                 
                 await websocket.send(message)  # 画像データを送信
-                #print(responce)        
+                print(list_data)        
 
     except Exception as e:
         print(f"Unexpected error: {e}")
@@ -114,7 +113,7 @@ async def receive_server_messages(websocket):
         while True:
             message = await websocket.recv()  # サーバーからのメッセージを受信
             parsed_message = json.loads(message)
-            print("Received from server:", parsed_message)
+            #print("Received from server:", parsed_message)
 
     except websockets.exceptions.ConnectionClosed:
         print("WebSocket connection closed")
