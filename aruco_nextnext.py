@@ -61,9 +61,7 @@ async def send_webcam_data(websocket):
                             markers_id_pos = np.squeeze((np.concatenate([np_ids,np_pos],axis=2)),1)
                             #print(markers_id_pos)
 
-
-                            make_map_list = make_map(markers_id_pos) 
-                            list_data = np.array([row for num in make_map_list for row in markers_id_pos if row[0] == num]).tolist()
+                            list_data= make_map(markers_id_pos) 
 
     
 
@@ -93,8 +91,7 @@ async def send_webcam_data(websocket):
                         "list": []  # 空リストを送信
                     })
                 
-                await websocket.send(message)  # 画像データを送信
-                print(list_data)        
+                await websocket.send(message)  # 画像データを送信  
 
     except Exception as e:
         print(f"Unexpected error: {e}")
@@ -140,12 +137,17 @@ async def websocket_client():
         print(f"An error occurred: {e}")
 
 def make_map(marker_id_point):
-    marker_id_pos = np.array(marker_id_point)
+    numbered_marker_id_point = np.array([[index + 1] + list(marker) for index, marker in enumerate(marker_id_point)])
+    # marker_id_pos = [[int(marker[0]), int(marker[1])] + marker[2:] for marker in numbered_marker_id_point]
+    # marker_id_pos = np.array(marker_id_point)
+    marker_id_pos = numbered_marker_id_point.astype(int)
+    save_data = numbered_marker_id_point
+
     map_list = list()
     index_28 = None
     # ID28の取得
     for index, marker in enumerate(marker_id_pos):
-        if marker[0] == 28:
+        if marker[1] == 28:
             index_28 = index
             break
 
@@ -158,6 +160,7 @@ def make_map(marker_id_point):
         
         if len(map_list) > 0:
             next_marker_index = find_nearest_id(map_list[-1], marker_id_pos)
+
         else:
             # map_listが空の場合、最初のマーカーを取得
             next_marker_index = 0
@@ -173,18 +176,22 @@ def make_map(marker_id_point):
     #map_listから[0]の要素のみ取り出した新しい配列を作成
     map_id_list = [int(item[0]) for item in map_list]
 
-    return map_id_list
+    list_data = np.array([row for num in map_id_list for row in save_data if row[0] == num]).tolist()
+
+    
+    list_data = [[index + 1] + row for index, row in enumerate([row[1:] for row in list_data])]
+    return list_data
 
 
 def find_nearest_id(reference_id, marker_id_point):
-    reference_id_position = np.array([reference_id[1], reference_id[2]])
+    reference_id_position = np.array([reference_id[2], reference_id[3]])
     min_distance = float('inf')
     nearest_marker = None
     nearest_marker_index = None
 
     for marker in marker_id_point:
         if marker[0] != reference_id[0]:
-            position = np.array([marker[1], marker[2]])
+            position = np.array([marker[2], marker[3]])
             distance = np.linalg.norm(reference_id_position - position)
             if distance < min_distance:
                 min_distance = distance

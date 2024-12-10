@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const VideoStream = () => {
   const [frame, setFrame] = useState(""); // フレームデータを格納
@@ -7,6 +8,7 @@ const VideoStream = () => {
   const [showTable, setShowTable] = useState(false); // テーブルの表示状態を管理
   const socketRef = useRef(null); // WebSocketインスタンスを参照で保持
   const frameRef = useRef(null); // <img>タグに関連付ける
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isComponentMounted = true; // アンマウント後の呼び出しを防止
@@ -75,6 +77,10 @@ const VideoStream = () => {
     setShowTable(!showTable); // 表示状態を切り替え
   };
 
+  const makeMap = () => {
+    navigate("/makemap", { state: { list_data}});
+  }
+
   return (
     <div>
       <h1>WebSocket Video Stream</h1>
@@ -88,11 +94,13 @@ const VideoStream = () => {
       <button onClick={toggleTable}>
         {showTable ? "Hide Table" : "Show Table"} {/* ボタンのテキストを動的に変更 */}
       </button>
+        <button onClick={makeMap}>MAKE MAP</button>
       {showTable && ( // テーブルの表示状態を制御
         <div>
           <table>
             <thead>
               <tr>
+                <th>No.</th>
                 <th>ID</th>
                 <th>X</th>
                 <th>Y</th>
@@ -101,9 +109,10 @@ const VideoStream = () => {
             <tbody>
               {list_data.map((row, index) => (
                 <tr key={index}>
-                  <td>{row[0] ?? "N/A"}</td> {/* ID */}
-                  <td>{row[1] ?? "N/A"}</td> {/* X座標 */}
-                  <td>{row[2] ?? "N/A"}</td> {/* Y座標 */}
+                  <td>{row[0] ?? "N/A"}</td> {/* No */}
+                  <td>{row[1] ?? "N/A"}</td> {/* ID */}
+                  <td>{row[2] ?? "N/A"}</td> {/* X座標 */}
+                  <td>{row[3] ?? "N/A"}</td> {/* Y座標 */}
                 </tr>
               ))}
             </tbody>
