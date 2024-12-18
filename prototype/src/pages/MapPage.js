@@ -9,6 +9,37 @@ const VideoStream = () => {
   const socketRef = useRef(null); // WebSocketインスタンスを参照で保持
   const frameRef = useRef(null); // <img>タグに関連付ける
   const navigate = useNavigate();
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const nowSelect = selectedOption => {
+    let command = '';
+
+    switch (selectedOption){
+      case 'camera':
+        command = 'カメラモード';
+        break;
+      case 'default':
+        command = 'デフォルトモード';
+        break;
+      default:
+        command = '選択されていません';
+    }
+    return command
+  }
+
+  useEffect(() => {
+    if (selectedOption === 'default'){
+      setList([ [1,27,50,50],
+        [2,4,80,80],
+        [3,5,150,70],
+        [4,3,200,80],
+        [5,28,260,70]]);
+    }
+  },[handleOptionChange])
 
   useEffect(() => {
     let isComponentMounted = true; // アンマウント後の呼び出しを防止
@@ -119,6 +150,27 @@ const VideoStream = () => {
           </table>
         </div>
       )}
+      <div>
+        <label>
+          <input
+            type="radio"
+            value="camera"
+            checked={selectedOption === "camera"}
+            onChange={handleOptionChange}
+          />
+          camera
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="default"
+            checked={selectedOption === "default"}
+            onChange={handleOptionChange}
+          />
+          default
+        </label>
+        <p>{"選択中：" + nowSelect(selectedOption)}</p>
+      </div>
     </div>
   );
 };

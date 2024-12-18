@@ -39,11 +39,70 @@ const MakeMapPage = () => {
     ));
   };
 
+  const isOverlapping = (rect1, rect2) => {
+    return (
+      rect1.left < rect2.left + rect2.width &&
+      rect1.left + rect1.width > rect2.left &&
+      rect1.top < rect2.top + rect2.height &&
+      rect1.top + rect1.height > rect2.top
+    );
+  };
+
+  const adjustSizes = (list) => {
+    const result = [...list];
+  
+    for (let i = 0; i < result.length; i++) {
+      const current = result[i];
+      let adjusted = false;
+  
+      for (let j = 0; j < i; j++) {
+        const compared = result[j];
+        const rect1 = { left: current[2], top: current[3], width: 80, height: 80 };
+        const rect2 = { left: compared[2], top: compared[3], width: 80, height: 80 };
+  
+        if (isOverlapping(rect1, rect2)) {
+          // サイズ調整: ここでサイズを小さくする (例: 10pxずつ)
+          current[2] += 10; // X座標を右に移動
+          current[3] += 10; // Y座標を下に移動
+          adjusted = true;
+        }
+      }
+  
+      // サイズを変える (重なりが見つかるたびにサイズ縮小)
+      if (adjusted) {
+        current[4] = Math.max(current[4] - 10, 30); // 最小サイズは30にする
+      }
+    }
+  
+    return result;
+  };
   const renderSquares2 = () => {
-    return list_data.map((row, index) => (
-      <div key={index} style={{ position: 'absolute', left: row[2], top: row[3], width: '80px', height: '80px', backgroundColor: 'lightblue', border: '1px solid black' }}>
-        <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-          {row[1]}  {/* ID */}
+    const adjustedList = adjustSizes(list_data);
+
+    return adjustedList.map((row, index) => (
+      <div
+        key={index}
+        style={{
+          position: "absolute",
+          left: row[2],
+          top: row[3],
+          width: "80px",
+          height: "80px",
+          backgroundColor: "lightblue",
+          border: "1px solid black",
+          width: `${row[4]}px`, // サイズを反映
+          height: `${row[4]}px`, // サイズを反映
+        }}
+      >
+        <span
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          {row[1]}
         </span>
       </div>
     ));
@@ -73,5 +132,7 @@ const MakeMapPage = () => {
     </div>
   );
 };
+
+
 
 export default MakeMapPage;
