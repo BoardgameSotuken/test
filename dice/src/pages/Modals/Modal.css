@@ -1,0 +1,131 @@
+/* モーダルの背景 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明の背景 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* モーダルを他の要素より上に表示 */
+  }
+    
+  /* モーダルのコンテンツ */
+  .modal-content {
+    display: flex; /* フレックスボックスを有効化 */
+    flex-direction: column; /* 子要素を縦方向に並べる */
+    justify-content: center; /* 垂直方向の中央寄せ */
+    align-items: center; /* 水平方向の中央寄せ */
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 50%; /* 固定幅 */
+    height: 50%; /* 固定高さ */
+    max-height: 50%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 軽い影を追加 */
+    overflow-y: auto; /* 縦スクロールを有効化 */
+    position: relative; /* Close ボタン用 */
+    overflow: hidden;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 0px; /* モーダルの外側に配置 */
+    right: 0px; /* モーダルの外側に配置 */
+    top: 0;
+    background: rgb(175, 175, 175, 0.8);
+    border: none;
+    font-size: 25px;
+    border-radius: px;
+    cursor: pointer;
+  }
+
+  .items {
+    display: flex;
+    overflow-x: scroll;
+    
+  }
+
+  .item-img {
+    height: 15vh;
+    width: auto;
+    padding: 5%;
+  }
+
+  button {
+    background-color: cadetblue;
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+
+  .gradient-text {
+    position: relative;
+    display: block;
+    color: white; /* テキストの色 */
+    padding-left: 20px; /* 背景とテキストの余白 */
+    padding-right: 20px;
+    background: rgba(0, 0, 0, 0.8); /* 背景の半透明の黒 */
+    border-radius: 8px; /* 背景の角を丸める場合 */
+    
+    /* マスク効果を追加 */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0) 0%,    /* 左端: 完全に透明 */
+      rgba(0, 0, 0, 1) 10%,   /* 徐々に不透明になる */
+      rgba(0, 0, 0, 1) 90%,   /* 中央付近: 完全に不透明 */
+      rgba(0, 0, 0, 0) 100%   /* 右端: 完全に透明 */
+    );
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0) 0%, 
+      rgba(0, 0, 0, 1) 10%, 
+      rgba(0, 0, 0, 1) 90%, 
+      rgba(0, 0, 0, 0) 100%
+    );
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+  }
+
+  .map {
+    display: flex;
+    flex-wrap: wrap; /* 必要に応じて折り返す */
+    gap: 5px; /* セル間のスペース */
+  }
+
+  .cell {
+    border: 1px solid black;
+    background-color: orange;
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    display: flex;
+    justify-content: center;
+  }
+
+  .log {
+    width: 90%;
+    height: 100%; /* ログ全体をモーダル内で表示 */
+    overflow-y: auto; /* 縦スクロールを有効に */
+    padding: 10px; /* 内側の余白を調整 */
+    box-sizing: border-box; /* パディングを含めた幅・高さ計算 */
+    background-image: url(../../../public/imgs/logback.png);
+    background-position: right bottom;
+    background-size: 70%;
+    background-repeat: no-repeat;
+}

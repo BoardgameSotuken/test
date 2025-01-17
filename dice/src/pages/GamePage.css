@@ -1,0 +1,176 @@
+/* コンテナのスタイル */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000; /* 余白部分の背景色を黒に */
+}
+
+/* 縦横比を固定するコンテンツ */
+.content {
+  
+}
+
+.dasshutsu {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  aspect-ratio: 16/9;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden; /* はみ出した部分を非表示にする */
+  background-image: url(../../public/imgs/backd.png);
+  background-size: cover;
+  background-position: center;
+}
+
+.soshi {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  aspect-ratio: 16/9;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden; /* はみ出した部分を非表示にする */
+  background-image: url(../../public/imgs/backs.png);
+  background-size: cover;
+  background-position: center;
+}
+
+.message-container {
+  position: fixed;
+  top: 10px; /* 画面下部に表示 */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column; /* 縦に並べる */
+  gap: 10px; /* 各メッセージの間隔 */
+  align-items: center;
+  z-index: 2000;
+}
+
+.message-popup {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-out, fadeOut 0.5s ease-in 4.5s;
+  z-index: 2000;
+}
+
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.camp {
+  position: absolute;
+  bottom: -3%;
+  left: -1%;
+  height: 55%; /* containerの高さに対する45% */
+  width: auto; /* アスペクト比を維持 */
+  max-width: 30%; /* 横幅がcontainerを超えないように制限 */
+}
+
+.role-image {
+  position: absolute;
+  bottom: 0;
+  left: 8%;
+  height: 100%; /* containerの高さに対する45% */
+  width: auto; /* アスペクト比を維持 */
+  max-width: 100%; /* 横幅がcontainerを超えないように制限 */
+}
+
+
+.right-side {
+  position: absolute;
+  top: 10%;
+  right: 7%;
+  height: 100%; /* containerの高さに対する45% */
+  width: auto; /* アスペクト比を維持 */
+  max-width: 45%;
+  transform   : perspective(200px)  /* 深さ */
+  rotateY(-6deg);     /* 角度 */
+}
+
+.turn {
+  position: absolute;
+  top: 0%;
+  left: 2%;
+  color: #FFFFFF;
+  font-size: 2vmax;
+  text-shadow: 1px 2px 3px #ffffff;
+  line-height: 0.2em;
+}
+
+.player {
+  display: inline-block; /* 文字の長さに合わせて背景を広げる */
+  position: absolute;
+  top: -3%;
+  left: -6%;
+  color: white;
+  font-size: 2.3vmax;
+  text-shadow: 1px 2px 3px #000000;
+  background-color: rgba(0, 0, 0, 0.55);
+  padding-right: 100vw; /* 画面いっぱいに背景色を延ばす */
+  white-space: nowrap; /* 改行しない */
+}
+
+.player img {
+  height: 0.3em; /* テキストの高さに応じて画像サイズを調整 */
+  width: auto; /* アスペクト比を保つ */
+  margin: 0 0.2em; /* テキストと画像の間隔を調整 */
+  transform: translateY(-10%); /* 黒透過背景から少しはみ出す */
+}
+
+.right-side img{
+  height:  22vh;
+  width: auto;
+  max-width: 100%;
+  max-height: fit-content;
+  margin: 1%;
+  box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.right-side-top {
+  display:block;
+}
+
+.right-side-bottom {
+  display: flex;
+  margin-left: 5%;
+}
+
+.role-button img {
+  height: 28vh; /* 他のボタンよりも大きく設定 */
+  width: auto; /* アスペクト比を維持 */
+  max-width: 100%; /* 横幅の最大値を制限 */
+  margin-top: 6%;
+}
+
+.item-button img {
+  margin-left: 15%;    
+}
+
+.map-button {
+
+}
+
+.log-button {
+  margin-left: 3%;
+}
+
+  
